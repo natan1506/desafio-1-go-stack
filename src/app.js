@@ -26,9 +26,7 @@ app.get("/repositories", (request, response) => {
 
 app.post("/repositories", (request, response) => {
   const { title, url, techs } = request.body;
-  const techsArray = techs.split(',').map(tech => tech.trim());
-
-  const repository = { id: uuid(), title, url, techs: techsArray, likes: 0 };
+  const repository = { id: uuid(), title, url, techs, likes: 0 };
   
   repositories.push(repository);
 
@@ -38,7 +36,6 @@ app.post("/repositories", (request, response) => {
 app.put("/repositories/:id", (request, response) => {
   const { id } = request.params;
   const { title, url, techs } = request.body;
-  const techsArray = techs.split(',').map(tech => tech.trim());
 
   const repositoryIndex = repositories.findIndex(repository => repository.id == id);
   const { likes } = repositories[repositoryIndex];
@@ -47,7 +44,7 @@ app.put("/repositories/:id", (request, response) => {
     id,
     title,
     url,
-    techs: techsArray,
+    techs,
     likes
   }
 
@@ -69,19 +66,11 @@ app.post("/repositories/:id/like", (request, response) => {
   const { id } = request.params;
   const repositoryIndex = repositories.findIndex(repository => repository.id == id);
 
-  const { title, url, techs } = repositories[repositoryIndex];
   const likes = repositories[repositoryIndex].likes + 1;
 
-  const repository = {
-    id,
-    title,
-    url,
-    techs,
-    likes
-  }
-  repositories[repositoryIndex] = repository;
+  repositories[repositoryIndex].likes = likes;
 
-  return response.json(repository);
+  return response.json(repositories[repositoryIndex]);
 
 });
 
